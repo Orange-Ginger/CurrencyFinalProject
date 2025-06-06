@@ -1,0 +1,15 @@
+# Build artifacts
+/build/
+/*.exe
+
+# GoogleTest source
+/googletest/
+
+# VS Code settings
+/.vscode/
+
+# Temp files
+*.obj
+*.o
+*.out
+*.log
