@@ -49,17 +49,6 @@ public:
         return amount * taxRate;
     }
 
-    virtual bool isStable() const override {
-        return volatility < 1.01;
-    }
-
-    virtual bool canBeUsedIn(const std::string& country) const override {
-        for (const std::string& allowed : allowedCountries) {
-            if (allowed == country) return true;
-        }
-        return false;
-    }
-
     virtual std::string makeReport(double amount,
         const std::string& country) const override {
         std::string volatilityLevel;
@@ -81,6 +70,17 @@ public:
              << "Allowed in " << country << ": " 
              << (canBeUsedIn(country) ? "Yes" : "No") << "\n";
         return info.str();
+    }
+
+    virtual bool isStable() const override {
+        return volatility < 1.01;
+    }
+
+    virtual bool canBeUsedIn(const std::string& country) const override {
+        for (const std::string& allowed : allowedCountries) {
+            if (allowed == country) return true;
+        }
+        return false;
     }
 
     void setAllowedCountries(const std::vector<std::string>& countries) {
@@ -109,17 +109,6 @@ public:
         else return amount * (taxRate * 0.8);
     }
 
-    virtual bool isStable() const override {
-        return inflationRate < 0.03;
-    }
-
-    virtual bool canBeUsedIn(const std::string& country) const override {
-        for (const std::string& allowed : allowedCountries) {
-            if (allowed == country) return true;
-        }
-        return false;
-    }
-
     virtual std::string makeReport(double amount,
         const std::string& country) const override {
         std::ostringstream info;
@@ -134,6 +123,17 @@ public:
              << "Allowed in " << country << ": " 
              << (canBeUsedIn(country) ? "Yes" : "No") << "\n";
         return info.str();
+    }
+
+    virtual bool isStable() const override {
+        return inflationRate < 0.03;
+    }
+
+    virtual bool canBeUsedIn(const std::string& country) const override {
+        for (const std::string& allowed : allowedCountries) {
+            if (allowed == country) return true;
+        }
+        return false;
     }
 
     void setAllowedCountries(const std::vector<std::string>& countries) {
