@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <random>
+#include <iomanip>
 
 class Currency {
 protected:
@@ -16,7 +18,6 @@ public:
     code(_code), symbol(_symbol), type(_type), rate(_rate), taxRate(_taxRate) {}
     
     virtual ~Currency() = default;
-    virtual double getRate() const = 0;
     virtual void fluctuate() = 0;
     virtual double applyTaxOrFee(double amount) const = 0;
     virtual std::string makeReport(double amount,
@@ -27,6 +28,7 @@ public:
     std::string getCode() const { return code; }
     std::string getSymbol() const { return symbol; }
     std::string getType() const { return type; }
+    double getRate() const { return rate; }
 };
 
 class CryptoCurrency : public Currency {
@@ -38,10 +40,6 @@ public:
         const double _rate, const double _taxRate, double _volatility) : 
     Currency(_code, _symbol, "Crypto", _rate, _taxRate),
         volatility(_volatility) {}
-
-    virtual double getRate() const override {
-        return rate;
-    }
 
     virtual void fluctuate() override {
         rate *= volatility;
@@ -73,6 +71,7 @@ public:
             volatilityLevel = "High";
 
         std::ostringstream info;
+        info << std::fixed << std::setprecision(6);
         info << "-- Currency info --\n"
              << code << " " << symbol << " (" + type + ")\n"
              << "Current rate to USD: " << rate << "\n"
@@ -99,10 +98,6 @@ public:
     Currency(_code, _symbol, "Fiat", _rate, _taxRate),
         inflationRate(_inflationRate) {}
 
-    virtual double getRate() const override {
-        return rate;
-    }
-
     virtual void fluctuate() override {
         rate *= (1 + inflationRate);
     }
@@ -128,6 +123,7 @@ public:
     virtual std::string makeReport(double amount,
         const std::string& country) const override {
         std::ostringstream info;
+        info << std::fixed << std::setprecision(6);
         info << "-- Currency info --\n"
              << code << " " << symbol << " (" + type + ")\n"
              << "Current rate to USD: " << rate << "\n"
@@ -142,5 +138,75 @@ public:
 
     void setAllowedCountries(const std::vector<std::string>& countries) {
         allowedCountries = countries;
+    }
+};
+
+class MagicCurrency : public Currency {
+protected:
+    int rarityLevel;
+    std::string incantation;
+    std::string realmOrigin;
+    static inline std::random_device rd;
+    static inline std::mt19937 gen;
+public:
+    MagicCurrency(const std::string& _code, const std::string& _symbol,
+        const std::string& _type, const double _rate, const double _taxRate,
+        const int _rarityLevel, const std::string& _incantation,
+        const std::string& _realmOrigin) :
+    Currency(_code, _symbol, "Magic", _rate, _taxRate), rarityLevel(_rarityLevel),
+        incantation(_incantation), realmOrigin(_realmOrigin) {}
+
+    virtual void fluctuate() override {
+        std::uniform_real_distribution<> rng(-0.2, 0.3);
+        double changeFactor = 1.0 + rng(gen);
+        if (rarityLevel > 5) {
+            if (changeFactor < 1.0) changeFactor = 1.0 + (rng(gen) / 2);
+        }
+        rate *= changeFactor;
+    }
+
+    virtual double applyTaxOrFee(double amount) const override {
+        int power = 0;
+        for (char c : incantation) {
+            power += static_cast<int>(c);
+        }
+        double modifier = 1.0;
+        if (power % 2 == 0) modifier *= 0.1;
+        else modifier *= 1.5;
+        return amount * taxRate * modifier;
+    }
+
+    virtual std::string makeReport(double amount,
+        const std::string& country) const override {
+        std::ostringstream info;
+        info << std::fixed << std::setprecision(6);
+        info << "-- Currency info --\n"
+             << code << " " << symbol << " (" + type + ")\n"
+             << "Current rate to USD: " << rate << "\n"
+             << "Fee on amount: " << (applyTaxOrFee(amount)) << " " << code << "\n"
+             << "Rarity level: " << rarityLevel << "\n"
+             << "Magic incantation: " << "\033[3m" << incantation << "\033[0m" << "\n"
+             << "Realm of origin: " << realmOrigin << "\n"
+             << "Stable: " << (isStable() ? "Yes" : "No") << " (of course it isn't)" << "\n"
+             << "Allowed in " << country << ": " 
+             << (canBeUsedIn(country) ? "Yes" : "No") << "\n";
+        return info.str();
+    }
+
+    virtual bool isStable() const override {
+        return false;
+    }
+
+    virtual bool canBeUsedIn(const std::string& country) const override {
+        if (country == realmOrigin) return true;
+        else {
+            std::uniform_int_distribution<int> rng(1, 10);
+            int sum = 0;
+            for (int i = 0; i < 10; i++) {
+                sum += rng(gen);
+            }
+            if (sum > 50) return true;
+        }
+        return false;
     }
 };
