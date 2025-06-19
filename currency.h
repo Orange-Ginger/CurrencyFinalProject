@@ -4,6 +4,8 @@
 #include <sstream>
 #include <random>
 #include <iomanip>
+#include <unordered_map>
+#include <stdexcept>
 
 class Currency {
 protected:
@@ -208,5 +210,51 @@ public:
             if (sum > 50) return true;
         }
         return false;
+    }
+};
+
+class CurrencyConverter {
+private:
+    std::unordered_map<std::string, std::shared_ptr<Currency>> currencies;
+public:
+    void addCurrency(std::shared_ptr<Currency>& currency) {
+        currencies[currency->getCode()] = currency;
+    }
+
+    double convert(const std::string& fromCode, const std::string& toCode,
+        double amount) const {
+        auto fromIt = currencies.find(fromCode);
+        auto toIt = currencies.find(toCode);
+
+        if (fromIt == currencies.end()) throw std::runtime_error("Currency '" +
+            fromCode + "' not found.");
+        if (toIt == currencies.end()) throw std::runtime_error("Currency '" +
+            toCode + "' not found.");
+
+        double amountInUSD = amount / fromIt->second->getRate();
+        double converted = amount * toIt->second->getRate();
+        return converted;
+    }
+
+    std::string getReport(const std::string& code, double amount,
+        const std::string& country) const {
+        auto it = currencies.find(code);
+        if (it == currencies.end()) throw std::runtime_error("Currency '" +
+            code + "' not found.");
+        return it->second->makeReport(amount, country);
+    }
+
+    void fluctuateAll() {
+        for (auto& pair : currencies) {
+            pair.second->fluctuate();
+        }
+    }
+
+    void listAllCurrencies() const {
+        std::cout << "Available currencies:\n";
+        for (const auto& pair : currencies) {
+            std::cout << "-" << pair.first << pair.second->getSymbol()
+            <<" (" << pair.second->getType() << ")\n";
+        }
     }
 };
