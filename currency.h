@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <unordered_map>
 #include <stdexcept>
+#include <memory>
 
 class Currency {
 protected:
