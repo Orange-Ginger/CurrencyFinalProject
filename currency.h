@@ -21,6 +21,9 @@ public:
     Currency(const std::string& _code, const std::string& _symbol, 
         const std::string& _type, const double _rate, const double _taxRate) :
     code(_code), symbol(_symbol), type(_type), rate(_rate), taxRate(_taxRate) {}
+
+    Currency(const Currency&) = delete;
+    Currency& operator=(const Currency&) = delete;
     
     virtual ~Currency() = default;
     virtual void fluctuate() = 0;
@@ -46,6 +49,9 @@ public:
         const std::vector<std::string>& _allowedCountries) : 
     Currency(_code, _symbol, "Crypto", _rate, _taxRate),
         allowedCountries(_allowedCountries), volatility(_volatility) {}
+
+    CryptoCurrency(const CryptoCurrency&) = delete;
+    CryptoCurrency& operator=(const CryptoCurrency&) = delete;
 
     virtual void fluctuate() override {
         rate *= volatility;
@@ -101,6 +107,9 @@ public:
     Currency(_code, _symbol, "Fiat", _rate, _taxRate),
         allowedCountries(_allowedCountries), inflationRate(_inflationRate) {}
 
+    FiatCurrency(const FiatCurrency&) = delete;
+    FiatCurrency& operator=(const FiatCurrency&) = delete;
+
     virtual void fluctuate() override {
         rate *= (1 + inflationRate);
     }
@@ -154,6 +163,9 @@ public:
         const std::string& _realmOrigin) :
     Currency(_code, _symbol, "Magic", _rate, _taxRate), rarityLevel(_rarityLevel),
         incantation(_incantation), realmOrigin(_realmOrigin) {}
+
+    MagicCurrency(const MagicCurrency&) = delete;
+    MagicCurrency& operator=(const MagicCurrency&) = delete;
 
     virtual void fluctuate() override {
         std::uniform_real_distribution<> rng(-0.2, 0.3);
@@ -214,6 +226,10 @@ class CurrencyConverter {
 private:
     std::unordered_map<std::string, std::shared_ptr<Currency>> currencies;
 public:
+    CurrencyConverter() = default;
+    CurrencyConverter(const CurrencyConverter&) = delete;
+    CurrencyConverter& operator=(const CurrencyConverter&) = delete;
+
     void addCurrency(const std::shared_ptr<Currency>& currency) {
         currencies[currency->getCode()] = currency;
     }

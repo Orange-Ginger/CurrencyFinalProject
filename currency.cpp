@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -5,6 +6,39 @@
 #include "currency.h"
 #include "currency_parser.h"
 #include <windows.h>
+#include <limits>
+#include <cctype>
+
+bool isString(const std::string& s) {
+    for (char c : s)
+        if (!std::isalpha(c) && c != ' ' && c != '-' && c != '\'') return false;
+    return !s.empty();
+}
+
+std::string readValidatedString(const std::string& prompt, bool (*validator)(const std::string&)) {
+    std::string input;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, input);
+        if (validator(input)) return input;
+        std::cout << "Invalid input. Please try again.\n";
+    }
+}
+
+double readPositiveDouble(const std::string& prompt) {
+    double value;
+    while (true) {
+        std::cout << prompt;
+        std::cin >> value;
+        if (!std::cin.fail() && value > 0) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return value;
+        }
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid input. Please enter a positive number.\n";
+    }
+}
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
@@ -27,21 +61,17 @@ int main() {
         std::cout << "3. Exit\n";
         std::cout << "Choose an option: ";
         std::cin >> choice;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if (choice == 1) converter.listAllCurrencies();
         else if (choice == 2) {
             std::string fromCode, toCode, userCountry;
             double amount;
 
-            std::cout << "Enter your country: ";
-            std::cin.ignore();
-            std::getline(std::cin, userCountry);
-            std::cout << "Enter FROM currency code: ";
-            std::cin >> fromCode;
-            std::cout << "Enter TO currency code: ";
-            std::cin >> toCode;
-            std::cout << "Enter amount to convert: ";
-            std::cin >> amount;
+            userCountry = readValidatedString("Enter your location: ", isString);
+            fromCode = readValidatedString("Enter FROM currency code: ", isString);
+            toCode = readValidatedString("Enter TO currency code: ", isString);
+            amount = readPositiveDouble("Enter amount to convert: ");
 
             try {
                 auto fromCurrency = converter.getCurrency(fromCode);
