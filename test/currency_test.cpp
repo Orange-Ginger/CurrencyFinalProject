@@ -81,7 +81,7 @@ TEST(FiatCurrencyTest, ApplyTaxOrFee) {
     std::vector<std::string> allowed = {"United States"};
     FiatCurrency usd("USD", "$", 1.0, 0.01, 0.02, allowed);
 
-    EXPECT_DOUBLE_EQ(usd.applyTaxOrFee(50), 0.5);      // 50 * 0.01
+    EXPECT_DOUBLE_EQ(usd.applyTaxOrFee(50), 0.5);
     EXPECT_DOUBLE_EQ(usd.applyTaxOrFee(500), 500 * 0.01 * 0.95);
     EXPECT_DOUBLE_EQ(usd.applyTaxOrFee(5000), 5000 * 0.01 * 0.9);
     EXPECT_DOUBLE_EQ(usd.applyTaxOrFee(20000), 20000 * 0.01 * 0.8);
@@ -91,7 +91,7 @@ TEST(CryptoCurrencyTest, ApplyTaxOrFee) {
     std::vector<std::string> allowed = {"United States"};
     CryptoCurrency btc("BTC", "₿", 105767, 0.02, 1.35, allowed);
 
-    EXPECT_DOUBLE_EQ(btc.applyTaxOrFee(100), 2.0); // 100 * 0.02
+    EXPECT_DOUBLE_EQ(btc.applyTaxOrFee(100), 2.0);
 }
 
 TEST(CryptoCurrencyTest, FluctuateAndStability) {
