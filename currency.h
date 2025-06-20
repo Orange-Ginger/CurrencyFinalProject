@@ -1,12 +1,14 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string>
 #include <sstream>
 #include <random>
 #include <iomanip>
 #include <unordered_map>
 #include <stdexcept>
 #include <memory>
+#include <algorithm>
 
 class Currency {
 protected:
@@ -40,9 +42,10 @@ private:
     std::vector<std::string> allowedCountries;
 public:
     CryptoCurrency(const std::string& _code, const std::string& _symbol,
-        const double _rate, const double _taxRate, double _volatility) : 
+        const double _rate, const double _taxRate, double _volatility,
+        const std::vector<std::string>& _allowedCountries) : 
     Currency(_code, _symbol, "Crypto", _rate, _taxRate),
-        volatility(_volatility) {}
+        allowedCountries(_allowedCountries), volatility(_volatility) {}
 
     virtual void fluctuate() override {
         rate *= volatility;
@@ -85,10 +88,6 @@ public:
         }
         return false;
     }
-
-    void setAllowedCountries(const std::vector<std::string>& countries) {
-        allowedCountries = countries;
-    }
 };
 
 class FiatCurrency : public Currency {
@@ -97,9 +96,10 @@ private:
     std::vector<std::string> allowedCountries;
 public:
     FiatCurrency(const std::string& _code, const std::string& _symbol,
-        const double _rate, const double _taxRate, const double _inflationRate) : 
+        const double _rate, const double _taxRate, const double _inflationRate,
+        const std::vector<std::string>& _allowedCountries) : 
     Currency(_code, _symbol, "Fiat", _rate, _taxRate),
-        inflationRate(_inflationRate) {}
+        allowedCountries(_allowedCountries), inflationRate(_inflationRate) {}
 
     virtual void fluctuate() override {
         rate *= (1 + inflationRate);
@@ -138,10 +138,6 @@ public:
         }
         return false;
     }
-
-    void setAllowedCountries(const std::vector<std::string>& countries) {
-        allowedCountries = countries;
-    }
 };
 
 class MagicCurrency : public Currency {
@@ -153,7 +149,7 @@ protected:
     static inline std::mt19937 gen;
 public:
     MagicCurrency(const std::string& _code, const std::string& _symbol,
-        const std::string& _type, const double _rate, const double _taxRate,
+        const double _rate, const double _taxRate,
         const int _rarityLevel, const std::string& _incantation,
         const std::string& _realmOrigin) :
     Currency(_code, _symbol, "Magic", _rate, _taxRate), rarityLevel(_rarityLevel),
@@ -218,8 +214,14 @@ class CurrencyConverter {
 private:
     std::unordered_map<std::string, std::shared_ptr<Currency>> currencies;
 public:
-    void addCurrency(std::shared_ptr<Currency>& currency) {
+    void addCurrency(const std::shared_ptr<Currency>& currency) {
         currencies[currency->getCode()] = currency;
+    }
+
+    std::shared_ptr<Currency> getCurrency(const std::string& code) const {
+        auto it = currencies.find(code);
+        if (it == currencies.end()) throw std::runtime_error("Currency '" + code + "' not found.");
+        return it->second;
     }
 
     double convert(const std::string& fromCode, const std::string& toCode,
@@ -232,8 +234,8 @@ public:
         if (toIt == currencies.end()) throw std::runtime_error("Currency '" +
             toCode + "' not found.");
 
-        double amountInUSD = amount / fromIt->second->getRate();
-        double converted = amount * toIt->second->getRate();
+        double amountInUSD = amount * fromIt->second->getRate();
+        double converted = amountInUSD / toIt->second->getRate();
         return converted;
     }
 
@@ -252,10 +254,21 @@ public:
     }
 
     void listAllCurrencies() const {
-        std::cout << "Available currencies:\n";
+        std::vector<std::shared_ptr<Currency>> currencyList;
         for (const auto& pair : currencies) {
-            std::cout << "-" << pair.first << pair.second->getSymbol()
-            <<" (" << pair.second->getType() << ")\n";
+            currencyList.push_back(pair.second);
+        }
+        std::sort(currencyList.begin(), currencyList.end(),
+                 [](const std::shared_ptr<Currency>& a,
+                    const std::shared_ptr<Currency>& b) {
+                    if (a->getType() == b -> getType())
+                        return a->getCode() < b->getCode();
+                    return a->getType() < b->getType();
+                 });
+        std::cout << "Available currencies:\n";
+        for (const auto& currency : currencyList) {
+            std::cout << "-" << currency->getCode() << " " << currency->getSymbol()
+                      <<" (" << currency->getType() << ")\n";
         }
     }
 };

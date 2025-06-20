@@ -1,9 +1,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
+#include <vector>
 #include "currency_parser.h"
+#include "currency.h"
 
-std::vector<std::string> splitCSVLine(const std::string& line, char delimiter = ',') {
+std::vector<std::string> splitCSVLine(const std::string& line, char delimiter) {
     std::vector<std::string> result;
     std::stringstream ss(line);
     std::string token;
@@ -55,7 +58,7 @@ std::vector<std::shared_ptr<CryptoCurrency>> loadCryptoCurrencies(const std::str
             auto allowedCountries = splitCountries(fields[5]);
 
             auto currency = std::make_shared<CryptoCurrency>(code, symbol,
-                "Crypto", rate, taxRate, volatility, allowedCountries);
+                rate, taxRate, volatility, allowedCountries);
             currencies.push_back(currency);
 
         } catch(const std::exception& exception) {
@@ -90,7 +93,7 @@ std::vector<std::shared_ptr<FiatCurrency>> loadFiatCurrencies(const std::string&
             auto allowedCountries = splitCountries(fields[5]);
 
             auto currency = std::make_shared<FiatCurrency>(code, symbol,
-                "Fiat", rate, taxRate, inflationRate, allowedCountries);
+                rate, taxRate, inflationRate, allowedCountries);
             currencies.push_back(currency);
 
         } catch(const std::exception& exception) {
@@ -126,7 +129,7 @@ std::vector<std::shared_ptr<MagicCurrency>> loadMagicCurrencies(const std::strin
             std::string realmOrigin = fields[6];
 
             auto currency = std::make_shared<MagicCurrency>(code, symbol,
-                "Magic", rate, taxRate, rarityLevel, incantation, realmOrigin);
+                rate, taxRate, rarityLevel, incantation, realmOrigin);
             currencies.push_back(currency);
 
         } catch(const std::exception& exception) {
