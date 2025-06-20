@@ -5,7 +5,7 @@
 1. Create (if needed) and navigate to build directory:
 
 ```bash
-mkdir -p build
+mkdir build
 cd build
 ```
 
@@ -21,8 +21,8 @@ cmake ..
 cmake --build .
 ```
 
-4. After building, run the tests:
+4. After building, run the tests from build directory:
 
 ```bash
-.\test\currency_test.exe --gtest_color=yes
+ctest
 ```

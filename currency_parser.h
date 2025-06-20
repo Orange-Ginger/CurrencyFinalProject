@@ -9,3 +9,4 @@ std::vector<std::shared_ptr<CryptoCurrency>> loadCryptoCurrencies(const std::str
 std::vector<std::shared_ptr<MagicCurrency>> loadMagicCurrencies(const std::string& filename);
 
 std::vector<std::string> splitCSVLine(const std::string& line, char delimiter = ',');
+std::vector<std::string> splitCountries(const std::string& countriesStr);
