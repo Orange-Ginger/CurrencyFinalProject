@@ -32,6 +32,8 @@ ctest
 **Note:**  
 Make sure the CSV files (`crypto_exchange_rates.csv`, `fiat_exchange_rates.csv`, `magic_exchange_rates.csv`) are in the same directory as the executable (`build/Debug`).
 
+![Picture showing architecture](assets/image1.png)
+
 1. After building, go to the executable directory:
 
 ```bash

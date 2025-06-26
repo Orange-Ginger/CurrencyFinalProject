@@ -12,9 +12,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+include_directories(${CMAKE_SOURCE_DIR}/headers)
+
 add_executable(currency_converter
-    currency.cpp
-    currency_parser.cpp
+    source/currency.cpp
+    source/currency_parser.cpp
+    source/text_formatting.cpp
+    source/main.cpp
 )
 
 enable_testing()
