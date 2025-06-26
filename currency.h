@@ -37,6 +37,7 @@ public:
     std::string getSymbol() const { return symbol; }
     std::string getType() const { return type; }
     double getRate() const { return rate; }
+    double getTaxRate() const { return taxRate; }
 };
 
 class CryptoCurrency : public Currency {
@@ -72,7 +73,7 @@ public:
             volatilityLevel = "High";
 
         std::ostringstream info;
-        info << std::fixed << std::setprecision(6);
+        info << std::fixed << std::setprecision(3);
         info << "-- Currency info --\n"
              << code << " " << symbol << " (" + type + ")\n"
              << "Current rate to USD: " << rate << "\n"
@@ -94,6 +95,8 @@ public:
         }
         return false;
     }
+
+    double getVolatility () const { return volatility; }
 };
 
 class FiatCurrency : public Currency {
@@ -124,7 +127,7 @@ public:
     virtual std::string makeReport(double amount,
         const std::string& country) const override {
         std::ostringstream info;
-        info << std::fixed << std::setprecision(6);
+        info << std::fixed << std::setprecision(3);
         info << "-- Currency info --\n"
              << code << " " << symbol << " (" + type + ")\n"
              << "Current rate to USD: " << rate << "\n"
@@ -147,6 +150,8 @@ public:
         }
         return false;
     }
+
+    double getInflationRate() const { return inflationRate; }
 };
 
 class MagicCurrency : public Currency {
@@ -190,7 +195,7 @@ public:
     virtual std::string makeReport(double amount,
         const std::string& country) const override {
         std::ostringstream info;
-        info << std::fixed << std::setprecision(6);
+        info << std::fixed << std::setprecision(3);
         info << "-- Currency info --\n"
              << code << " " << symbol << " (" + type + ")\n"
              << "Current rate to USD: " << rate << "\n"
@@ -220,6 +225,10 @@ public:
         }
         return false;
     }
+
+    int getRarityLevel() const { return rarityLevel; }
+    std::string getIncantation() const { return incantation; }
+    std::string getRealmOrigin() const { return realmOrigin; }
 };
 
 class CurrencyConverter {

@@ -60,8 +60,17 @@ int main() {
         std::cout << "2. Convert between currencies\n";
         std::cout << "3. Exit\n";
         std::cout << "Choose an option: ";
-        std::cin >> choice;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        while (true) {
+            std::cin >> choice;
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Please, enter a real number: ";
+            } else {
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                break;
+            }
+        }
 
         if (choice == 1) converter.listAllCurrencies();
         else if (choice == 2) {
@@ -80,7 +89,7 @@ int main() {
                 double converted = converter.convert(fromCode, toCode, amount);
 
                 std::cout << "\n===== Conversion Result =====\n";
-                std::cout << amount << " " << fromCurrency->getCode()
+                std::cout << std::fixed << std::setprecision(3) << amount << " " << fromCurrency->getCode()
                           << " = " << converted << " " << toCurrency->getCode() << "\n";
 
                 std::cout << "\n" << fromCurrency->makeReport(amount, userCountry);

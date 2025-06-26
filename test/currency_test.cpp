@@ -10,6 +10,8 @@ TEST(CryptoCurrencyTest, ConstructionAndGetters) {
     EXPECT_EQ(btc.getSymbol(), "₿");
     EXPECT_EQ(btc.getType(), "Crypto");
     EXPECT_DOUBLE_EQ(btc.getRate(), 105767);
+    EXPECT_DOUBLE_EQ(btc.getTaxRate(), 0.02);
+    EXPECT_DOUBLE_EQ(btc.getVolatility(), 1.35);
     EXPECT_TRUE(btc.canBeUsedIn("Japan"));
     EXPECT_FALSE(btc.canBeUsedIn("France"));
 }
@@ -22,6 +24,8 @@ TEST(FiatCurrencyTest, ConstructionAndGetters) {
     EXPECT_EQ(usd.getSymbol(), "$");
     EXPECT_EQ(usd.getType(), "Fiat");
     EXPECT_DOUBLE_EQ(usd.getRate(), 1.0);
+    EXPECT_DOUBLE_EQ(usd.getTaxRate(), 0.005);
+    EXPECT_DOUBLE_EQ(usd.getInflationRate(), 0.023);
     EXPECT_TRUE(usd.canBeUsedIn("United States"));
     EXPECT_FALSE(usd.canBeUsedIn("Japan"));
 }
@@ -33,6 +37,9 @@ TEST(MagicCurrencyTest, ConstructionAndGetters) {
     EXPECT_EQ(arsh.getSymbol(), "✨");
     EXPECT_EQ(arsh.getType(), "Magic");
     EXPECT_DOUBLE_EQ(arsh.getRate(), 100.0);
+    EXPECT_DOUBLE_EQ(arsh.getTaxRate(), 0.05);
+    EXPECT_EQ(arsh.getRarityLevel(), 7);
+    EXPECT_EQ(arsh.getIncantation(), "Fireball");
     EXPECT_TRUE(arsh.canBeUsedIn("Arcadia"));
 }
 
